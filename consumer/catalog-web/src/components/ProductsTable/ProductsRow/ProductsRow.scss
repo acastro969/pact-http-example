@@ -1,0 +1,20 @@
+.products-row {
+  border: 1px solid black;
+
+  .products-row__data {
+    border: 1px solid black;
+    padding: 4px 16px;
+
+    &--available {
+      text-align: center;
+      font-size: 24px;
+      background-color: greenyellow;
+    }
+
+    &--unavailable {
+      text-align: center;
+      font-size: 24px;
+      background-color: red;
+    }
+  }
+}
