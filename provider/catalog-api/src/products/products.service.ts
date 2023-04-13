@@ -11,7 +11,7 @@ export class ProductsService {
   ) {}
 
   findAll() {
-    return this.productRepository.find();
+    return this.productRepository.find(); // TODO: Map to response DTO
   }
 
   findOne(id: number) {
@@ -19,6 +19,6 @@ export class ProductsService {
 
     if (!product) throw new NotFoundException(`Product #${id} not found`);
 
-    return product;
+    return product; // TODO: Map to response DTO
   }
 }
