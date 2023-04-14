@@ -21,7 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:pact": "cross-env CI=true react-scripts test --testTimeout=30000 pact.spec.js --transformIgnorePatterns \"node_modules/(?!axios)/\""
+    "test:pact": "cross-env CI=true react-scripts test --testTimeout=30000 pact.spec.js --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+    "pact:publish": "pact-broker publish ./pacts --consumer-app-version=\"$(npx --yes @pact-foundation/absolute-version)\" --auto-detect-version-properties --broker-base-url=http://localhost:8000 --broker-username pact_example --broker-password pact_example"
   },
   "eslintConfig": {
     "extends": [
