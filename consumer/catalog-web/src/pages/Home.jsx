@@ -1,18 +1,21 @@
-import { useQuery } from "react-query";
-import ProductsTable from "../components/ProductsTable/ProductsTable";
 import axios from "axios";
+import ProductsTable from "../components/ProductsTable/ProductsTable";
 import "./Home.scss";
-import { PRODUCTS_API_URL } from "../utils/Constants";
+import { useEffect, useState } from "react";
 
 const Home = () => {
-  const { data } = useQuery("getProducts", {
-    queryFn: () => axios.get(`${PRODUCTS_API_URL}/products`),
-  });
+  const [products, setProducts] = useState();
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/products").then((response) => {
+      setProducts(response.data);
+    });
+  }, []);
 
   return (
     <div className="home">
       <h1 className="home__title">🛒 Our Products</h1>
-      <ProductsTable data={data?.data} />
+      <ProductsTable data={products} />
     </div>
   );
 };
