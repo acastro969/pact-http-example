@@ -1,5 +1,5 @@
-import axios from "axios";
 import ProductsTable from "../components/ProductsTable/ProductsTable";
+import { getAllProducts } from "../services/ProductsService";
 import "./Home.scss";
 import { useEffect, useState } from "react";
 
@@ -7,9 +7,7 @@ const Home = () => {
   const [products, setProducts] = useState();
 
   useEffect(() => {
-    axios.get("http://localhost:3001/products").then((response) => {
-      setProducts(response.data);
-    });
+    getAllProducts().then((response) => setProducts(response.data));
   }, []);
 
   return (

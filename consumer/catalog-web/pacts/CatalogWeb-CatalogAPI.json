@@ -4,30 +4,37 @@
   },
   "interactions": [
     {
+      "description": "Create new product",
+      "request": {
+        "method": "POST",
+        "path": "/products"
+      },
+      "response": {
+        "status": 202
+      }
+    },
+    {
       "description": "Get all products",
       "request": {
         "method": "GET",
         "path": "/products"
       },
       "response": {
-        "body": [
-          {
-            "availability": true,
-            "description": "Game Console",
-            "id": 1,
-            "name": "Playstation 4"
-          }
-        ],
+        "body": [],
         "headers": {
-          "Content-Type": "application/json"
-        },
-        "matchingRules": {
-          "$.body": {
-            "match": "type",
-            "min": 1
-          }
+          "Content-Type": "application/json; charset=utf-8"
         },
         "status": 200
+      }
+    },
+    {
+      "description": "Get product by ID 1",
+      "request": {
+        "method": "GET",
+        "path": "/products/1"
+      },
+      "response": {
+        "status": 404
       }
     }
   ],
