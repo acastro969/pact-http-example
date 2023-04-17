@@ -19,32 +19,6 @@
       }
     },
     {
-      "description": "Create new product",
-      "providerState": "Product created successfully",
-      "request": {
-        "method": "POST",
-        "path": "/products"
-      },
-      "response": {
-        "status": 202
-      }
-    },
-    {
-      "description": "Get all products",
-      "providerState": "No products exist",
-      "request": {
-        "method": "GET",
-        "path": "/products"
-      },
-      "response": {
-        "body": [],
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        "status": 200
-      }
-    },
-    {
       "description": "Get product by ID 1",
       "providerState": "Product with ID 1 does not exists",
       "request": {
@@ -109,39 +83,14 @@
       }
     },
     {
-      "description": "Get product by ID 1",
-      "providerState": "Product with ID 1 does not exists",
+      "description": "Create new product",
+      "providerState": "a valid product that does not exists",
       "request": {
-        "method": "GET",
-        "path": "/products/1"
+        "method": "POST",
+        "path": "/products"
       },
       "response": {
-        "status": 404
-      }
-    },
-    {
-      "description": "Get product by ID 1",
-      "providerState": "Product with ID 1 exists",
-      "request": {
-        "method": "GET",
-        "path": "/products/1"
-      },
-      "response": {
-        "body": {
-          "availability": true,
-          "description": "Game Console",
-          "id": 1,
-          "name": "Playstation 4"
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "matchingRules": {
-          "$.body": {
-            "match": "type"
-          }
-        },
-        "status": 200
+        "status": 202
       }
     }
   ],

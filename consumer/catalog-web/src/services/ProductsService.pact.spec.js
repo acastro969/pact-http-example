@@ -130,7 +130,7 @@ describe("Products Service Pact Test", () => {
   describe("Creating a product", () => {
     test("Product created", async () => {
       await provider.addInteraction({
-        states: [{ description: "Product created successfully" }],
+        states: [{ description: "a valid product that does not exists" }],
         uponReceiving: "Create new product",
         withRequest: {
           method: "POST",
