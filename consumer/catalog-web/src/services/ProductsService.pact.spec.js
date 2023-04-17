@@ -32,6 +32,7 @@ describe("Products Service Pact Test", () => {
   describe("Getting all products", () => {
     test("Products exists", async () => {
       await provider.addInteraction({
+        states: [{ description: "Products exist" }],
         uponReceiving: "Get all products",
         withRequest: {
           method: "GET",
@@ -54,6 +55,7 @@ describe("Products Service Pact Test", () => {
 
     test("No products exists", async () => {
       await provider.addInteraction({
+        states: [{ description: "No products exist" }],
         uponReceiving: "Get all products",
         withRequest: {
           method: "GET",
@@ -81,6 +83,7 @@ describe("Products Service Pact Test", () => {
   describe("Getting one product", () => {
     test("Product ID 1 exists", async () => {
       await provider.addInteraction({
+        states: [{ description: "Product with ID 1 exists" }],
         uponReceiving: "Get product by ID 1",
         withRequest: {
           method: "GET",
@@ -103,6 +106,7 @@ describe("Products Service Pact Test", () => {
 
     test("Product ID 1 does not exists", async () => {
       await provider.addInteraction({
+        states: [{ description: "Product with ID 1 does not exists" }],
         uponReceiving: "Get product by ID 1",
         withRequest: {
           method: "GET",
@@ -126,6 +130,7 @@ describe("Products Service Pact Test", () => {
   describe("Creating a product", () => {
     test("Product created", async () => {
       await provider.addInteraction({
+        states: [{ description: "Product created successfully" }],
         uponReceiving: "Create new product",
         withRequest: {
           method: "POST",
