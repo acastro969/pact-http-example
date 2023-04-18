@@ -64,7 +64,7 @@ Ordinarily, without contract testing, we would start up both the provider and th
 
 We can think of this as a three steps process:
 
-1. We will begin by writing the tests for the consumer, where we capture the contract. We have the consumer talk to a mock of the provider that Pact provides, and we expect to receive a response. We repeat this process for all the interactions that the consumer has with the provider. At the end of the test session, we have all the integrations we need, and the Pact mock verifies that the consumer makes the correct API calls, does what it's supposed to do, and can handle the response back. If the consumer fails, we won't serialize the contract.
+1. We will begin by writing the tests for the consumer, where we capture the contract. We have the consumer communicate to a mock of the provider provided by Pact, and we expect to receive a certain response. We repeat this process for all the interactions. At the end of the test session, we have all the integrations we need, and the Pact mock verifies that the consumer makes the correct API calls, does what it's supposed to do, and can handle the response back. If the consumer fails, we won't serialize the contract.
 
 2. Step two involves sending all those requests to a Pact broker like PactFlow, which is a commercial version of the broker, and sharing the version and collaborating on that contract.
 
@@ -85,3 +85,29 @@ Suppose we have a Kafka queue and a product catalog website that will consume me
 3. Lastly, to test the provider's ability to produce the correct message and metadata, we will use Pact to invoke the provider's function that produces the message and verify that it matches the scenario specified in the contract. Pact will do this by triggering the function through code and checking that it produces the correct message and metadata.
 
 By following this process, we can test the interaction between the consumer and provider without having to set up complex states or publish real events to the queue.
+
+## Pact Broker
+
+The Pact Broker is an application for sharing contracts and verification results and are required for integrating Pact into CI/CD pipelines.
+
+It:
+
+- Shows you real examples of the services interactions and relationships.
+- Provides up to date API documentation.
+- Solves the problem of sharing contracts and verification results between consumers and providers.
+- Allows CI/CD contract testing integration and automation.
+- Tells you which versions of the application can be deployed safely together.
+
+### Is Using a Pact Broker Mandatory?
+
+If you're just getting started you can exchange pacts via any mechanisms (build artifacts, S3 buckets). However you are losing the before mentioned advantages of implementing a Pact Broker. A Pact Broker allows you to integrate contract testing into your CI/CD pipeline and releasing code faster.
+
+### Self-hosted Pact Broker or PactFlow
+
+The Pact Broker is an Open Source tool that requires you to deploy, administer and host it yourself.
+
+PactFlow is a fork of the Open Source Pact Broker with improved UI, field level verification results and user and teams management.
+
+All PactFlow plans includes the Pact Broker hosting and comes with extra benefits and capabilities.
+
+![](https://i.ibb.co/4mp9K6Z/PactFlow.png)
