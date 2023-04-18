@@ -38,7 +38,7 @@
       },
       "response": {
         "body": {
-          "availability": true,
+          "available": true,
           "description": "Game Console",
           "id": 1,
           "name": "Playstation 4"
@@ -64,7 +64,7 @@
       "response": {
         "body": [
           {
-            "availability": true,
+            "available": true,
             "description": "Game Console",
             "id": 1,
             "name": "Playstation 4"
@@ -86,11 +86,20 @@
       "description": "Create new product",
       "providerState": "a valid product that does not exists",
       "request": {
+        "body": {
+          "available": true,
+          "description": "Game Console",
+          "id": 1,
+          "name": "Playstation 4"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
         "method": "POST",
         "path": "/products"
       },
       "response": {
-        "status": 202
+        "status": 201
       }
     }
   ],

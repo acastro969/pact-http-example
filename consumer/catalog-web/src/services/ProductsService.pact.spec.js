@@ -22,11 +22,11 @@ const provider = new PactV3({
 });
 
 describe("Products Service Pact Test", () => {
-  const mockedProductResponse = {
+  const mockedProduct = {
     id: 1,
     name: "Playstation 4",
     description: "Game Console",
-    availability: true,
+    available: true,
   };
 
   describe("Getting all products", () => {
@@ -40,16 +40,16 @@ describe("Products Service Pact Test", () => {
         },
         willRespondWith: {
           status: 200,
-          body: eachLike(mockedProductResponse),
+          body: eachLike(mockedProduct),
         },
       });
 
       await provider.executeTest(async (mockService) => {
-        const response = await getAllProducts(
-          `${mockService.url}/products`
-        ).then((response) => response.data);
+        const response = await getAllProducts(mockService.url).then(
+          (response) => response.data
+        );
 
-        expect(response).toStrictEqual([mockedProductResponse]);
+        expect(response).toStrictEqual([mockedProduct]);
       });
     });
 
@@ -71,9 +71,9 @@ describe("Products Service Pact Test", () => {
       });
 
       await provider.executeTest(async (mockService) => {
-        const product = await getAllProducts(
-          `${mockService.url}/products`
-        ).then((response) => response.data);
+        const product = await getAllProducts(mockService.url).then(
+          (response) => response.data
+        );
 
         expect(product).toStrictEqual([]);
       });
@@ -91,16 +91,16 @@ describe("Products Service Pact Test", () => {
         },
         willRespondWith: {
           status: 200,
-          body: like(mockedProductResponse),
+          body: like(mockedProduct),
         },
       });
 
       await provider.executeTest(async (mockService) => {
-        const response = await getProductById(
-          `${mockService.url}/products/1`
-        ).then((response) => response.data);
+        const response = await getProductById(mockService.url, 1).then(
+          (response) => response.data
+        );
 
-        expect(response).toStrictEqual(mockedProductResponse);
+        expect(response).toStrictEqual(mockedProduct);
       });
     });
 
@@ -119,9 +119,7 @@ describe("Products Service Pact Test", () => {
 
       await provider.executeTest(async (mockService) => {
         await expect(
-          getProductById(`${mockService.url}/products/1`).then(
-            (response) => response.data
-          )
+          getProductById(mockService.url, 1).then((response) => response.data)
         ).rejects.toThrow("Request failed with status code 404");
       });
     });
@@ -135,19 +133,20 @@ describe("Products Service Pact Test", () => {
         withRequest: {
           method: "POST",
           path: "/products",
+          body: mockedProduct,
         },
         willRespondWith: {
-          status: 202,
+          status: 201,
         },
       });
 
       await provider.executeTest(async (mockService) => {
-        // TODO: Mock body
         const response = await createProduct(
-          `${mockService.url}/products`
+          mockService.url,
+          mockedProduct
         ).then((response) => response);
 
-        await expect(response.status).toStrictEqual(HttpStatusCode.Accepted);
+        await expect(response.status).toStrictEqual(HttpStatusCode.Created);
       });
     });
   });
