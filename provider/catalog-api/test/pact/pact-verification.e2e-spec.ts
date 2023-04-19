@@ -4,7 +4,7 @@ import { PactProviderModule, PactVerifierService } from 'nestjs-pact';
 import { AppModule } from '../../src/app.module';
 import { Product } from '../../src/products/entities/product.entity';
 import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 
 describe('Pact Verification', () => {
   let verifierService: PactVerifierService;
@@ -14,11 +14,23 @@ describe('Pact Verification', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         AppModule,
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          logging: true,
+          host: process.env.TEST_DATABASE_HOST,
+          port: parseInt(process.env.TEST_DATABASE_PORT),
+          username: process.env.TEST_DATABASE_USER,
+          password: process.env.TEST_DATABASE_PASSWORD,
+          database: process.env.TEST_DATABASE_NAME,
+          autoLoadEntities: true,
+          synchronize: true, // Disable on production
+          entities: [Product],
+        }),
         PactProviderModule.register({
           provider: 'CatalogAPI',
-          pactBrokerUrl: 'http://localhost:8000',
-          pactBrokerUsername: 'pact_example',
-          pactBrokerPassword: 'pact_example',
+          pactBrokerUrl: process.env.PACT_BROKER_URL,
+          pactBrokerUsername: process.env.PACT_BROKER_USERNAME,
+          pactBrokerPassword: process.env.PACT_BROKER_PASSWORD,
           consumerVersionTags: ['master'],
           stateHandlers: {
             'Products exist': async () => {

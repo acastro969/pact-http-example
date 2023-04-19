@@ -110,4 +110,6 @@ PactFlow is a fork of the Open Source Pact Broker with improved UI, field level 
 
 All PactFlow plans includes the Pact Broker hosting and comes with extra benefits and capabilities.
 
+With the free Starter Plan, you get unlimited users, five contracts and core features, no credit card is needed.
+
 ![](https://i.ibb.co/4mp9K6Z/PactFlow.png)

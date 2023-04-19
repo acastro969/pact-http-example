@@ -1,4 +1,5 @@
 # env
+/.env
 /provider/catalog-api/.env
 
 # compiled output
