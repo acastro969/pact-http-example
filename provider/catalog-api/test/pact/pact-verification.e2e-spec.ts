@@ -32,6 +32,8 @@ describe('Pact Verification', () => {
           pactBrokerUsername: process.env.PACT_BROKER_USERNAME,
           pactBrokerPassword: process.env.PACT_BROKER_PASSWORD,
           consumerVersionTags: ['master'],
+          publishVerificationResult: true,
+          providerVersion: '1.0.0',
           stateHandlers: {
             'Products exist': async () => {
               const product = new Product();
