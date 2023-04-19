@@ -21,7 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test:pact": "cross-env CI=true react-scripts test --testTimeout=30000 pact.spec.js --transformIgnorePatterns \"node_modules/(?!axios)/\"",
-    "pact:publish": "pact-broker publish ./pacts --consumer-app-version %npm_package_version% --tag master --broker-base-url=http://localhost:8000 --broker-username pact_example --broker-password pact_example"
+    "pact:publish": "sh pact-publish.sh"
   },
   "eslintConfig": {
     "extends": [
