@@ -113,3 +113,151 @@ All PactFlow plans includes the Pact Broker hosting and comes with extra benefit
 With the free Starter Plan, you get unlimited users, five contracts and core features, no credit card is needed.
 
 ![](https://i.ibb.co/4mp9K6Z/PactFlow.png)
+
+### Users and Security in PactFlow
+
+- PactFlow uses a "seat" based model, where you purchase capacity for how many Users you need and assign them as required. Each user gets a read-only and read-write API token that can be used for automation. Users are able to rotate these tokens as needed.
+
+- All users contribute to the same system, they are simply separately authenticated.
+
+- Users may login with their GitHub credentials (via OAuth2), a Google email domain or standard login (user/pass).
+
+- In addition to 3rd party penetration testing, PactFlow performs regular security scanning encrypting all data at rest and uses TLS for all remote communication. Each customer is further isolated via separate database instances and no customer has access to other customers' data.
+
+- PactFlow recommends that contracts do not contain any sensitive data (e.g. PII) and contain structural example content only, using tools like Faker.
+
+- All webhook secrets are fully encrypted against a customer specific key.
+
+- PactFlow comes with predefined roles, each role being assigned a collection of permissions. https://docs.pactflow.io/docs/permissions/predefined-roles/
+
+## Versioning
+
+To prevent issues when multiple processes (such as consumers or providers) attempt to access and modify a contract concurrently or in an unpredictable order, it is recommended that the version numbers of the applications used to publish pacts and verification results should either be or contain the commit (i.e. the Git SHA or its equivalent in other version control tools).
+
+There are three resources that can have versions in a Pact Broker:
+
+1. The pact file.
+2. The consumer application that generated the pact file.
+3. The provider application that verified the contract.
+
+Pact users should never have to worry about their pact versions as they are automatically managed by the Pact Broker. However, the versions of the consumer and provider applications should be properly set.
+
+A related concept is the Pact Matrix, which contains all verification states for all versions of existing consumers and providers. It is used by the 'can-i-deploy' tool to determine whether it is safe to deploy an application. Following versioning rules means we can obtain reliable 'can-i-deploy' results and avoid breaking integration points.
+
+### Consumer Versioning
+
+When a pact is published to the broker, it is associated with a consumer name, version, and provider name.
+
+A contract that hasn't changed can belong to multiple consumer versions without any issues, thanks to the broker's duplicate detection. If many consumer versions point to a single contract, verification doesn't have to be repeated if the contracts haven't changed.
+
+### Provider Versioning
+
+When verifying a pact, the provider version is associated with the content of the pact for that particular pair (provider/consumer), which serves to determine a state for each version.
+
+Note that Pact verification is done on a contract, not on a specific consumer version. If another version of the consumer with the same contract is published, then the verification does not need to be repeated.
+
+A provider version can be verified against multiple contracts.
+
+### Best Practices
+
+#### Rules
+
+1. Make sure to always change the consumer version whenever the contract changes.
+
+2. Make sure that version numbers are unique, for example, a feature branch that changes the contract should not have the same version as any other branch.
+
+3. Ensure that your versions can be known during a release.
+
+4. If the application is both a consumer and a provider at the same time, make sure that the version number used to publish the pact is the same as the one used to publish the verification results.
+
+#### Guidelines
+
+1. For git, it's ideal to use the git commit sha (short or long) or include the git commit sha in your version number (e.g., 0.0.10+76a39e5). This way the consumer version will change whenever the pact contract changes, feature branches will have different versions to master branch versions, and you can identify and checkout the production version of the provider if you need to prevent missing verifications.
+
+2. If you are unable to follow the before mentioned point, then ensure that you are able to tag the "version control" repository with an unique application version number at build time.
+
+3. Avoid having random values in your contracts, as you wouldn't be able to take advantage of Pact's duplicate contract detection.
+
+## Implementing Pact in a CI/CD Workflow
+
+To implement Pact in a CI/CD workflow, the following tasks need to be accomplished:
+
+Consumer side:
+
+1. Running the Pact tests.
+2. Publishing the Pact to the broker.
+
+Provider side:
+
+3. Fetching the existing pacts.
+4. Verifying the existing pacts.
+5. Publishing the pact verification.
+
+Optionally, a webhook can be set up to trigger provider builds every time a new contract is published that requires verification.
+
+## Working on Feature Branches
+
+Application versions in the Pact Broker should map 1:1 to repository commits, and the versions used to publish pacts and verification results should be, or contain, the commits.
+
+In the Pact CI/CD Workshop (https://docs.pactflow.io/docs/workshops/ci-cd/workshop/) we associated the consumer app version with the name of the branch when we publish the pacts.
+
+You can also automatically detect the repository branch from known CI, environment variables or git CLI. Supports Buildkite, Circle CI, Travis CI, GitHub Actions, Jenkins, Hudson, AppVeyor, GitLab, CodeShip, Bitbucket and Azure DevOps.
+
+For the provider verification, we have configured that it has to fetch the latest pacts belonging to the mainBranch in each consumer and the pacts that belong to the currently deployed versions.
+
+To ensure that our provider APIs are backwards compatible with consumer versions deployed in production, the Pact Broker needs to know which versions are currently deployed in production. For this purpose, the "record-deployment" command (present in the Makefile) is used in the Pact Broker CLI. In the example of the workshop, it is hardcoded to "production" which has been previously created as an environment using another Pact Broker CLI command called "create-environment".
+
+https://docs.pact.io/pact_broker/client_cli/readme#create-environment
+
+When working with feature branches, if you need to modify the expectations set by your consumer, you can make the changes locally and commit them to a new feature branch. In the CI/CD pipeline, this will trigger Pact tests, which will generate a new contract. Then, the broker will trigger a provider build, which includes the pact verification.
+
+If the pact verification succeeds, the feature branch is ready to be merged into the main consumer branch. If it fails, it means that the new provider expectations have not yet been implemented, and the new consumer code cannot be merged into the main branch yet. In this case, a new feature branch should be created on the provider side to ensure the implementation of the new expectations.
+
+On the provider side, enabling "work in progress pacts" allows for any pact that has not yet published a successful result to be marked as a pending pact. This feature prevents changed pacts from breaking provider builds.
+
+To implement changes in the provider, create a new branch with the same name as the feature branch on the consumer side, and implement the changes, commit and push them. A provider build will be triggered to verify the consumer feature branch pact. If the verification succeeds, merge the changes to the main branch of the provider.
+
+Now, we can manually re-build our consumer, it should pass and then we can merge the changes to the main consumer branch.
+
+When we need to make changes to our provider without having the new expectations published by the consumer, it is important to ensure that we do not break any existing consumer expectations. One approach is to create a new feature branch on the provider side, make the necessary code changes, and commit and push the code. If all expectations are satisfied, the code changes have not broken any consumer expectations and can be merged to master. However, if it fails, it indicates that the provider code changes have broken some consumer expectations, and the broken functionality cannot be merged to master. This approach ensures that any changes made to the provider do not negatively impact the consumer's expectations and avoids potential issues down the line.
+
+## Can I Deploy
+
+The Pact approach to managing deployment dependencies involves using the Pact Matrix and the 'can-i-deploy' tool. The Pact Matrix is a grid that displays all the consumer and provider versions that have been tested against each other using Pact. This grid can be viewed in either the Open Source broker or PactFlow.
+
+By examining the matrix, teams can determine which versions are safe to deploy.
+
+The 'can-i-deploy' tool is used to assess whether it is safe to deploy a new application version based on the currently deployed version's pact. It helps teams avoid deploying a new version that may violate the existing contract.
+
+This tool can verify the compatibility of a provider and consumer based on their contract. If the interactions are correct, the tool will return a success message. If there are changes that break the contract, the tool will return a failure message.
+
+In PactFlow, there is a dedicated page for the Can I Deploy tool with a rich UI that provides a query interface for the Matrix to ensure safe deploys, providing additional context not readily available during CLI usage.
+
+## Webhooks
+
+Webhooks allow you to trigger HTTP requests when a Pact changes, is published, or a Pact verification is published. The most common use case is triggering a build of the provider every time a Pact changes and triggering a build of the consumer every time a verification is published.
+
+There are different events that can trigger a webhook:
+
+- 'contract content changed'
+- 'contract requiring verification published'
+- 'contract published'
+- 'provider verification published'
+- 'provider verification succeeded'
+- 'provider verification failed'
+
+In PactFlow, you can easily create webhooks by navigating to the "Webhooks" tab inside "Settings" and filling in the details (URL, the events that will trigger the webhook, and any optional headers or body data).
+
+While webhooks can be configured outside of PactFlow, it will require additional work to implement the necessary infrastructure.
+
+https://github.com/pact-foundation/pact_broker/blob/master/lib/pact_broker/doc/views/webhooks.markdown
+
+## Working with Multiple Consumers
+
+After creating the first pact, subsequent consumers must ensure they comply with the original pact. While they may use more or less than what is specified in the pact, the overlapping parts must be the same.
+
+If one or more consumers require a change to the provider, and the provider team agrees, the pacts can help identify which consumers are using a specific field. The provider team can then add the new field alongside the old field, ensure that all consumers are using the new field, and remove the old field. Pacts can help in this process, as once all consumers have switched to the new field, removing the old field from the provider should not cause any issues with the pacts. If there is an issue, it indicates that some consumer is still using the old field.
+
+It is important to remember that pacts solve technological problems and cannot solve people problems. For instance, if two teams have different requirements, pacts cannot resolve the conflict. However, they can help in identifying these issues.
+
+Each consumer has it's own contract with the provider - even if there is significant overlap in functionality.
